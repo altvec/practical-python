@@ -1,30 +1,24 @@
+#!/usr/bin/env python3
+
 # pcost.py
 #
 # Exercise 1.27
-import sys
-import csv
+from report import read_portfolio
 
 
 def portfolio_cost(filename):
     '''Return portfolio cost.'''
-    cost = 0.0
-    with open(filename, 'rt') as file:
-        rows = csv.reader(file)
-        next(rows)  # skip headers
-        for row in rows:
-            _, shares, price = row
-            try:
-                cost += int(shares) * float(price)
-            except ValueError as err:
-                print(err)
-                continue
-    return cost
+    portfolio = read_portfolio(filename)
+    return sum([s['shares'] * s['price'] for s in portfolio])
 
 
-if len(sys.argv) == 2:
-    filename = sys.argv[1]
-else:
-    filename = '../Work/Data/portfolio.csv'
+def main(args):
+    if len(args) != 2:
+        raise SystemExit(f'Usage: {args[0]} portfolio_file')
+    cost = portfolio_cost(args[1])
+    print(f'Total cost: {cost}')
 
-cost = portfolio_cost(filename)
-print(f'Total cost: {cost}')
+
+if __name__ == '__main__':
+    import sys
+    main(sys.argv)
