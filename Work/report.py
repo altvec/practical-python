@@ -1,7 +1,9 @@
+#!/usr/bin/env python3
+
 # report.py
 #
 # Exercise 2.4
-import csv
+from fileparse import parse_csv
 
 
 def read_portfolio(filename):
@@ -9,31 +11,20 @@ def read_portfolio(filename):
     Read a stock portfolio file into a list of dictionaries with keys
     name, shares, and price.
     '''
-    portfolio = []
-    with open(filename, 'rt') as f:
-        rows = csv.reader(f)
-        headers = next(rows)
-        for row in rows:
-            record = dict(zip(headers, row))
-            portfolio.append({
-                'name': record['name'],
-                'shares': int(record['shares']),
-                'price': float(record['price']),
-            })
-    return portfolio
+    with open(filename) as lines:
+        return parse_csv(
+            lines,
+            select=['name', 'shares', 'price'],
+            types=[str, int, float],
+        )
 
 
 def read_prices(filename):
     '''
     Read a CSV file of price data into a dict mapping names to prices.
     '''
-    prices = {}
-    with open(filename, 'rt') as f:
-        rows = csv.reader(f)
-        for row in rows:
-            if row:
-                prices[row[0]] = float(row[1])
-    return prices
+    with open(filename) as lines:
+        return dict(parse_csv(lines, types=[str, float], has_headers=False))
 
 
 def make_report(portfolio, prices):
@@ -68,4 +59,11 @@ def portfolio_report(portfolio_file, prices_file):
     print_report(report)
 
 
-portfolio_report('Data/portfolio.csv', 'Data/prices.csv')
+def main(args):
+    if len(args) != 3:
+        raise SystemExit(f'Usage: {args[0]} portfolio_file prices_file')
+    portfolio_report(args[1], args[2])
+
+if __name__ == '__main__':
+    import sys
+    main(sys.argv)
