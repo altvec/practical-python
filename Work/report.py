@@ -3,6 +3,8 @@
 # report.py
 #
 # Exercise 2.4
+
+from stock import Stock
 from fileparse import parse_csv
 
 
@@ -12,11 +14,12 @@ def read_portfolio(filename):
     name, shares, and price.
     '''
     with open(filename) as lines:
-        return parse_csv(
+        portdicts = parse_csv(
             lines,
             select=['name', 'shares', 'price'],
             types=[str, int, float],
         )
+    return [Stock(d['name'], d['shares'], d['price']) for d in portdicts]
 
 
 def read_prices(filename):
@@ -30,11 +33,9 @@ def read_prices(filename):
 def make_report(portfolio, prices):
     report = []
     for s in portfolio:
-        current_price = prices[s['name']]
-        change        = current_price - s['price']
-        report.append(
-            (s['name'], s['shares'], current_price, change)
-        )
+        current_price = prices[s.name]
+        change        = current_price - s.price
+        report.append((s.name, s.shares, current_price, change))
     return report
 
 
