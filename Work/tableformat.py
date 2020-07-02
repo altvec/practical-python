@@ -2,6 +2,10 @@ from typing import List
 from stock import Stock
 
 
+class FormatError(Exception):
+    pass
+
+
 class TableFormatter:
     def headings(self, headers):
         '''Emit table headings.'''
@@ -58,7 +62,7 @@ def create_formatter(name):
     elif name == 'html':
         return HTMLTableFormatter()
     else:
-        raise RuntimeError(f'Unknown format {name}')
+        raise FormatError(f'Unknown format {name}')
 
 
 def print_table(data: List[Stock], columns: List[str], formatter: str):
