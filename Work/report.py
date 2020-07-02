@@ -3,6 +3,9 @@
 # report.py
 #
 # Exercise 2.4
+
+import tableformat
+from stock import Stock
 from fileparse import parse_csv
 
 
@@ -12,11 +15,12 @@ def read_portfolio(filename):
     name, shares, and price.
     '''
     with open(filename) as lines:
-        return parse_csv(
+        portdicts = parse_csv(
             lines,
             select=['name', 'shares', 'price'],
             types=[str, int, float],
         )
+    return [Stock(d['name'], d['shares'], d['price']) for d in portdicts]
 
 
 def read_prices(filename):
@@ -30,39 +34,33 @@ def read_prices(filename):
 def make_report(portfolio, prices):
     report = []
     for s in portfolio:
-        current_price = prices[s['name']]
-        change        = current_price - s['price']
-        report.append(
-            (s['name'], s['shares'], current_price, change)
-        )
+        current_price = prices[s.name]
+        change        = current_price - s.price
+        report.append((s.name, s.shares, current_price, change))
     return report
 
 
-def print_report(report):
-    '''
-    Print formatted report.
-    '''
-    headers = ('Name', 'Shares', 'Price', 'Change')
-    print('%10s %10s %10s %10s' % headers)
-    print(('-' * 10 + ' ') * len(headers))
-    for row in report:
-        print('%10s %10d %10.2f %10.2f' % row)
+def print_report(reportdata, formatter):
+    '''Print formatted report.'''
+    formatter.headings(['Name', 'Shares', 'Price', 'Change'])
+    for name, shares, price, change in reportdata:
+        rowdata = [name, str(shares), f'{price:0.2f}', f'{change:0.2f}']
+        formatter.row(rowdata)
 
 
-def portfolio_report(portfolio_file, prices_file):
-    '''
-    Make a stock report given portfolio and price data files.
-    '''
+def portfolio_report(portfolio_file, prices_file, fmt='txt'):
+    '''Make a stock report given portfolio and price data files.'''
     portfolio = read_portfolio(portfolio_file)
     prices    = read_prices(prices_file)
     report    = make_report(portfolio, prices)
-    print_report(report)
+    formatter = tableformat.create_formatter(fmt)
+    print_report(report, formatter)
 
 
 def main(args):
-    if len(args) != 3:
-        raise SystemExit(f'Usage: {args[0]} portfolio_file prices_file')
-    portfolio_report(args[1], args[2])
+    if len(args) != 4:
+        raise SystemExit(f'Usage: {args[0]} portfolio_file prices_file format')
+    portfolio_report(args[1], args[2], args[3])
 
 if __name__ == '__main__':
     import sys
