@@ -1,3 +1,7 @@
+from typing import List
+from stock import Stock
+
+
 class TableFormatter:
     def headings(self, headers):
         '''Emit table headings.'''
@@ -55,3 +59,10 @@ def create_formatter(name):
         return HTMLTableFormatter()
     else:
         raise RuntimeError(f'Unknown format {name}')
+
+
+def print_table(data: List[Stock], columns: List[str], formatter: str):
+    formatter.headings(columns)
+    for obj in data:
+        rowdata = [str(getattr(obj, colname)) for colname in columns]
+        formatter.row(rowdata)
