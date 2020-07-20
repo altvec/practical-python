@@ -10,7 +10,7 @@ from portfolio import Portfolio
 from fileparse import parse_csv
 
 
-def read_portfolio(filename):
+def read_portfolio(filename, **opts):
     '''
     Read a stock portfolio file into a list of dictionaries with keys
     name, shares, and price.
@@ -20,17 +20,23 @@ def read_portfolio(filename):
             lines,
             select=['name', 'shares', 'price'],
             types=[str, int, float],
+            **opts,
         )
-    portfolio = [Stock(d['name'], d['shares'], d['price']) for d in portdicts]
+    portfolio = [Stock(**d) for d in portdicts]
     return Portfolio(portfolio)
 
 
-def read_prices(filename):
+def read_prices(filename, **opts):
     '''
     Read a CSV file of price data into a dict mapping names to prices.
     '''
     with open(filename) as lines:
-        return dict(parse_csv(lines, types=[str, float], has_headers=False))
+        return dict(parse_csv(
+            lines,
+            types=[str, float],
+            has_headers=False,
+            **opts,
+        ))
 
 
 def make_report(portfolio, prices):
