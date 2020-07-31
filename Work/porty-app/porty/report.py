@@ -4,10 +4,10 @@
 #
 # Exercise 2.4
 
-import tableformat
-from stock import Stock
-from portfolio import Portfolio
-from fileparse import parse_csv
+from . import tableformat
+from .stock import Stock
+from .portfolio import Portfolio
+from .fileparse import parse_csv
 
 
 def read_portfolio(filename, **opts):

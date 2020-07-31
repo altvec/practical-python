@@ -1,5 +1,5 @@
 from typing import List
-from stock import Stock
+from .stock import Stock
 
 
 class FormatError(Exception):
